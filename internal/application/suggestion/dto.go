@@ -43,6 +43,7 @@ type MemberSkillInfo struct {
 	AccountID string                       `json:"account_id"`
 	Username  string                       `json:"username"`
 	Name      string                       `json:"name"`
+	Email     string                       `json:"email"`
 	Role      string                       `json:"role"`
 	Position  string                       `json:"position"`
 	Skills    []profileEntity.ProfileSkill `json:"skills"`

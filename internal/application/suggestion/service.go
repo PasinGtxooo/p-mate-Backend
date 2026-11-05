@@ -306,9 +306,10 @@ func (s *SuggestionService) ListMemberSkills(ctx context.Context, projectID uuid
 		profByID[p.AccountID.String()] = p
 	}
 
-	// Look up username for every member so the UI can always show a readable
+	// Look up username and email for every member so the UI can always show a readable
 	// label, even when a member hasn't created a profile yet.
 	usernameByID := make(map[string]string, len(members))
+	emailByID := make(map[string]string, len(members))
 	if s.accountRepo != nil {
 		accs, err := s.accountRepo.ListByIDs(ctx, accountIDs)
 		if err != nil {
@@ -316,6 +317,7 @@ func (s *SuggestionService) ListMemberSkills(ctx context.Context, projectID uuid
 		}
 		for _, a := range accs {
 			usernameByID[a.ID.String()] = a.Username
+			emailByID[a.ID.String()] = a.Email
 		}
 	}
 
@@ -325,6 +327,7 @@ func (s *SuggestionService) ListMemberSkills(ctx context.Context, projectID uuid
 		info := MemberSkillInfo{
 			AccountID: utils.ShortUUIDWithPrefix(m.AccountID, accountEntity.AccountIDPrefix),
 			Username:  usernameByID[idStr],
+			Email:     emailByID[idStr],
 			Role:      roleByID[idStr],
 			Skills:    []profileEntity.ProfileSkill{},
 		}

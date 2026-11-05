@@ -16,6 +16,7 @@ type Profile struct {
 	LastName   string    `gorm:"type:varchar(100);not null"`
 	Nickname   *string   `gorm:"type:varchar(50)"`
 	AvatarPath *string        `gorm:"type:varchar(500)"`
+	Position   *string        `gorm:"column:position;type:varchar(50)"`
 	Skills     []ProfileSkill `gorm:"column:skills;serializer:json"`
 	State      string    `gorm:"type:enum('active','inactive');not null"`
 	CreatedAt  time.Time `gorm:"not null;default:CURRENT_TIMESTAMP"`

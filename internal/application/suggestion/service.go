@@ -330,6 +330,9 @@ func (s *SuggestionService) ListMemberSkills(ctx context.Context, projectID uuid
 		}
 		if p := profByID[idStr]; p != nil {
 			info.Name = strings.TrimSpace(p.FirstName + " " + p.LastName)
+			if p.Position != nil {
+				info.Position = *p.Position
+			}
 			if p.Skills != nil {
 				info.Skills = p.Skills
 			}

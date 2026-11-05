@@ -21,7 +21,8 @@ type Profile struct {
 	FirstName  string    `json:"firstName"`
 	LastName   string    `json:"lastName"`
 	Nickname   string    `json:"nickname"`
-	AvatarPath string              `json:"avatarPath"`
+	AvatarPath string                `json:"avatarPath"`
+	Position   string                `json:"position"`
 	Skills     []entity.ProfileSkill `json:"skills"`
 	State      State     `json:"state"`
 	CreatedAt  time.Time `json:"createdAt"`
@@ -42,6 +43,7 @@ func FromProfileModel(p *entity.Profile) *Profile {
 		LastName:   p.LastName,
 		Nickname:   lo.FromPtr(p.Nickname),
 		AvatarPath: lo.FromPtr(p.AvatarPath),
+		Position:   lo.FromPtr(p.Position),
 		Skills:     p.Skills,
 		State:      State{Active: p.State, Inactive: p.State},
 		CreatedAt:  p.CreatedAt,

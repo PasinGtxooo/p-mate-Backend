@@ -1,0 +1,68 @@
+description: Unauthorized - Missing or invalid authentication token
+content:
+  application/json:
+    schema:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: false
+        message:
+          type: string
+          example: "Authentication failed"
+        data:
+          type: object
+          example: null
+        error:
+          type: object
+          properties:
+            code:
+              type: integer
+              example: 401
+            message:
+              type: string
+              enum:
+                - MISSING_TOKEN
+                - INVALID_TOKEN
+                - MISSING_ACCOUNT_ID
+                - INVALID_ACCOUNT_ID
+              example: "MISSING_ACCOUNT_ID"
+          required: [code, message]
+      required: [success, message, data, error]
+    examples:
+      missingAccountId:
+        summary: Missing Account ID in JWT token
+        value:
+          success: false
+          message: "Authentication failed"
+          data: null
+          error:
+            code: 401
+            message: "MISSING_ACCOUNT_ID"
+      invalidAccountId:
+        summary: Invalid Account ID format
+        value:
+          success: false
+          message: "Authentication failed"
+          data: null
+          error:
+            code: 401
+            message: "INVALID_ACCOUNT_ID"
+      missingToken:
+        summary: Missing JWT token
+        value:
+          success: false
+          message: "Authentication failed"
+          data: null
+          error:
+            code: 401
+            message: "MISSING_TOKEN"
+      invalidToken:
+        summary: Invalid JWT token
+        value:
+          success: false
+          message: "Authentication failed"
+          data: null
+          error:
+            code: 401
+            message: "INVALID_TOKEN"

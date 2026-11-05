@@ -1,0 +1,23 @@
+type: object
+properties:
+  total:
+    type: integer
+    description: Total number of items in the current page
+    example: 100
+  limit:
+    type: integer
+    description: Number of items per page
+    example: 10
+  offset:
+    type: integer
+    description: Number of items to skip for pagination
+    example: 0
+  has_more:
+    type: boolean
+    description: Whether there are more pages available
+    example: true
+required:
+  - total
+  - limit
+  - offset
+  - has_more

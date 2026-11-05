@@ -1,0 +1,19 @@
+type: object
+properties:
+  success:
+    type: boolean
+    example: true
+  message:
+    type: string
+    example: "Operation completed successfully"
+  data:
+    type: object
+    description: Response data
+  error:
+    type: object
+    example: null
+required:
+  - success
+  - message
+  - data
+  - error

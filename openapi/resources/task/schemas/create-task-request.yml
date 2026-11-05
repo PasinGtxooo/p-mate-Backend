@@ -1,0 +1,36 @@
+type: object
+properties:
+  name:
+    type: string
+    example: "ทำงาน 01"
+  description:
+    type: string
+    example: "ทำงาน 01 แบบละเอียด"
+  priority:
+    type: string
+    enum: 
+    - low
+    - medium
+    - high
+    example: "medium"
+  start_datetime:
+    type: string
+    format: date-time
+    example: "2023-10-27T10:00:00Z"
+  end_datetime:
+    type: string
+    format: date-time
+    example: "2023-10-27T10:00:00Z"
+  location:
+    type: string
+    example: "มหาลัยเกษตรศาสตร์"
+  recurring_days:
+    type: integer
+    example: 7
+  recurring_until:
+    type: string
+    format: date-time
+    example: "2023-10-27T10:00:00Z"
+required:
+  - name
+  - priority

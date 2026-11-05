@@ -1,0 +1,120 @@
+paths:
+  /api/projects/{projectId}/invite:
+    post:
+      operationId: CreateInvitation
+      summary: Create project invitation
+      description: |
+        Send an invitation to a user to join a project using their Account ShortID.
+        The invitation will expire after 30 days.
+        
+        **Authorization**: User must be a member of the project.
+      tags:
+        - invitation
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: projectId
+          in: path
+          required: true
+          description: Project ID with prefix (e.g., proj_xxx)
+          schema:
+            type: string
+            pattern: "^proj_[a-zA-Z0-9]+$"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "../schemas/create-invitation-request.yml"
+      responses:
+        "201":
+          description: Invitation created successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "../../../shared/schemas/success.yml"
+                  - type: object
+                    properties:
+                      data:
+                        $ref: "../schemas/create-invitation-response.yml"
+        "400":
+          $ref: "../../../shared/responses/bad-request.yml"
+        "401":
+          $ref: "../../../shared/responses/unauthorized.yml"
+        "403":
+          $ref: "../../../shared/responses/forbidden.yml"
+        "404":
+          $ref: "../../../shared/responses/not-found.yml"
+        "409":
+          $ref: "../../../shared/responses/conflict.yml"
+        "500":
+          $ref: "../../../shared/responses/internal-server-error.yml"
+
+    get:
+      operationId: ListProjectInvitations
+      summary: List project invitations
+      description: |
+        Retrieve all pending invitations for a project.
+        
+        **Authorization**: User must be a member of the project.
+      tags:
+        - invitation
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: projectId
+          in: path
+          required: true
+          description: Project ID with prefix (e.g., proj_xxx)
+          schema:
+            type: string
+            pattern: "^proj_[a-zA-Z0-9]+$"
+      responses:
+        "200":
+          description: Project invitations retrieved successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "../../../shared/schemas/success.yml"
+                  - type: object
+                    properties:
+                      data:
+                        $ref: "../schemas/list-invitations-response.yml"
+        "401":
+          $ref: "../../../shared/responses/unauthorized.yml"
+        "403":
+          $ref: "../../../shared/responses/forbidden.yml"
+        "404":
+          $ref: "../../../shared/responses/not-found.yml"
+        "500":
+          $ref: "../../../shared/responses/internal-server-error.yml"
+
+  /api/accounts/me/invite:
+    get:
+      operationId: ListMyInvitations
+      summary: List my invitations
+      description: |
+        Retrieve all pending invitations that the authenticated user has received.
+        Only shows invitations that are pending and not expired.
+      tags:
+        - invitation
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Invitations retrieved successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "../../../shared/schemas/success.yml"
+                  - type: object
+                    properties:
+                      data:
+                        $ref: "../schemas/list-invitations-response.yml"
+        "401":
+          $ref: "../../../shared/responses/unauthorized.yml"
+        "500":
+          $ref: "../../../shared/responses/internal-server-error.yml"

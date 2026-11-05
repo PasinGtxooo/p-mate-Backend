@@ -1,0 +1,48 @@
+type: object
+required:
+  - name
+properties:
+  name:
+    type: string
+    description: Task name
+    example: "Gather requirements and define features"
+  description:
+    type: string
+    description: Task description (optional)
+    example: "รวบรวมความต้องการของผู้ใช้และกำหนดฟีเจอร์หลักของแอป"
+  priority:
+    type: string
+    enum:
+      - low
+      - medium
+      - high
+    description: Task priority level (optional)
+    example: "high"
+  start_datetime:
+    type: string
+    format: date-time
+    nullable: true
+    description: Task start date and time (optional, nullable)
+    example: "2026-01-14T09:00:00+07:00"
+  end_datetime:
+    type: string
+    format: date-time
+    nullable: true
+    description: Task end date and time (optional, nullable)
+    example: "2026-01-15T12:00:00+07:00"
+  location:
+    type: string
+    nullable: true
+    description: Task location (optional, nullable)
+    example: "ห้องประชุม A"
+  recurring_days:
+    type: integer
+    nullable: true
+    description: Number of days between recurring tasks (optional, nullable)
+    example: 7
+  recurring_until:
+    type: string
+    format: date-time
+    nullable: true
+    description: End date for recurring tasks (optional, nullable)
+    example: "2026-01-31T23:59:59+07:00"

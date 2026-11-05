@@ -1,0 +1,13 @@
+type: object
+required:
+  - content
+properties:
+  content:
+    type: string
+    description: The message content to send to the AI assistant
+    example: "สร้าง task ชื่อ ประชุมทีม priority high"
+  session_history:
+    type: array
+    description: Previous conversation history for context (optional, for multi-turn conversations)
+    items:
+      $ref: "./message.yml"

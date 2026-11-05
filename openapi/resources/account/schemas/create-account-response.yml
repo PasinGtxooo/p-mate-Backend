@@ -1,0 +1,13 @@
+type: object
+properties:
+  account_id:
+    type: string
+    description: The ID of the created account
+    example: "acc_KwSysDpxcBU9FNhGkn2dCf"
+  token:
+    type: string
+    description: JWT token for immediate authentication
+    example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+required:
+  - account_id
+  - token

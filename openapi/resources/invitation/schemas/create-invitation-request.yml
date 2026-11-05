@@ -1,0 +1,15 @@
+type: object
+required:
+  - invitee_short_id
+  - role
+properties:
+  invitee_short_id:
+    type: string
+    pattern: "^acc_[a-zA-Z0-9]+$"
+    description: Account ShortID of the user to invite
+    example: "acc_abc123"
+  role:
+    type: string
+    enum: [owner, member, viewer]
+    description: Role to assign to the invited user
+    example: "member"

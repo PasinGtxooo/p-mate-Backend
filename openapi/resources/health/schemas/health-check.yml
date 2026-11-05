@@ -1,0 +1,17 @@
+type: object
+properties:
+  status:
+    type: string
+    enum: [healthy, unhealthy]
+    description: Status of the individual check
+    example: "healthy"
+  message:
+    type: string
+    description: Human-readable message about the check
+    example: "Database connection is active"
+  details:
+    type: object
+    description: Additional details about the check
+    additionalProperties: true
+required:
+  - status

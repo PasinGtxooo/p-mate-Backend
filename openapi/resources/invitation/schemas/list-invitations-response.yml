@@ -1,0 +1,10 @@
+type: object
+properties:
+  invitations:
+    type: array
+    items:
+      $ref: "./invitation-response.yml"
+  total:
+    type: integer
+    description: Total number of invitations
+    example: 5

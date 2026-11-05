@@ -1,0 +1,102 @@
+paths:
+  /api/signup:
+    post:
+      operationId: CreateAccount
+      summary: Create a new account
+      description: Create a new account
+      tags:
+        - account
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "../schemas/create-account-request.yml"
+      responses:
+        "201":
+          description: Account created successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - type: object
+                    properties:
+                      data:
+                        $ref: "../schemas/create-account-response.yml"
+                  - $ref: "../../../shared/schemas/success.yml"
+        "400":
+          $ref: "../../../shared/responses/bad-request.yml"
+        "409":
+          $ref: "../../../shared/responses/conflict.yml"
+        "500":
+          $ref: "../../../shared/responses/internal-server-error.yml"
+
+  /api/login:
+    post:
+      operationId: Login
+      summary: Login account
+      description: Login account
+      tags:
+        - account
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "../schemas/login-request.yml"
+      responses:
+        "200":
+          description: "Login successfully"
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - type: object
+                    properties:
+                      data:
+                        $ref: "../schemas/login-response.yml"
+                  - $ref: "../../../shared/schemas/success.yml"
+        "400":
+          $ref: "../../../shared/responses/bad-request.yml"
+        "409":
+          $ref: "../../../shared/responses/conflict.yml"
+        "500":
+          $ref: "../../../shared/responses/internal-server-error.yml"
+
+  /api/accounts:
+    get:
+      operationId: ListAccounts
+      summary: List all accounts
+      description: Retrieve a list of all accounts with pagination
+      tags:
+        - account
+      parameters:
+        - name: limit
+          in: query
+          description: Number of items per page
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+        - name: offset
+          in: query
+          description: Number of items to skip for pagination
+          required: false
+          schema:
+            type: integer
+            minimum: 0
+      responses:
+        "200":
+          description: Accounts retrieved successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - type: object
+                    properties:
+                      data:
+                        $ref: "../schemas/list-accounts-response.yml"
+                  - $ref: "../../../shared/schemas/success.yml"
+        "500":
+          $ref: "../../../shared/responses/internal-server-error.yml"

@@ -1,0 +1,29 @@
+type: object
+properties:
+  id:
+    type: string
+    description: The unique identifier of the account
+    example: "acc_QsWNVMPBtXjDLiNfpMaWWw"
+  username:
+    type: string
+    description: The username of the account
+  email:
+    type: string
+    format: email
+    description: The email address of the account
+  status:
+    type: string
+    description: The status of the account
+    enum:
+      - active
+      - inactive
+  created_at:
+    type: string
+    format: date-time
+    description: The timestamp when the account was created
+required:
+  - id
+  - username
+  - email
+  - status
+  - created_at

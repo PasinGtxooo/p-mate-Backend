@@ -1,0 +1,15 @@
+type: object
+required:
+  - items
+  - total
+properties:
+  items:
+    type: array
+    items:
+      $ref: './task-with-project.yml'
+    description: List of today's tasks with project information
+  total:
+    type: integer
+    minimum: 0
+    example: 3
+    description: Total number of tasks for today

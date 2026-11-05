@@ -1,0 +1,31 @@
+type: object
+properties:
+  status:
+    type: string
+    enum: [healthy, unhealthy]
+    description: Overall health status of the service
+    example: "healthy"
+  timestamp:
+    type: string
+    format: date-time
+    description: The timestamp of the health check
+    example: "2026-01-05T10:30:00Z"
+  uptime:
+    type: string
+    description: How long the service has been running
+    example: "2h30m15s"
+  version:
+    type: string
+    description: The version of the service
+    example: "1.0.0"
+  checks:
+    type: object
+    description: Individual health checks
+    additionalProperties:
+      $ref: "./health-check.yml"
+required:
+  - status
+  - timestamp
+  - uptime
+  - version
+  - checks

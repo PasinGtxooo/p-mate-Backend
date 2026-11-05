@@ -1,0 +1,24 @@
+type: object
+required:
+  - file_name
+  - file_size
+  - content_type
+properties:
+  file_name:
+    type: string
+    description: Original filename with extension
+    example: "profile.jpg"
+  file_size:
+    type: integer
+    format: int64
+    description: File size in bytes (max 5MB)
+    example: 245678
+  content_type:
+    type: string
+    description: File MIME type
+    example: "image/jpeg"
+    enum:
+      - image/jpeg
+      - image/png
+      - image/gif
+      - image/webp

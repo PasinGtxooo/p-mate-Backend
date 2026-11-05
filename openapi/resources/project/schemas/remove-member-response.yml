@@ -1,0 +1,10 @@
+type: object
+properties:
+  project_id:
+    type: string
+    description: Project ID with prefix
+    example: proj_xyz789
+  account_id:
+    type: string
+    description: Account ID with prefix
+    example: acc_abc123

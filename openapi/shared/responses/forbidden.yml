@@ -1,0 +1,59 @@
+description: Forbidden - Not a project member or insufficient permissions
+content:
+  application/json:
+    schema:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: false
+        message:
+          type: string
+          example: "Access forbidden"
+        data:
+          type: object
+          example: null
+        error:
+          type: object
+          properties:
+            code:
+              type: integer
+              example: 403
+            message:
+              type: string
+              enum:
+                - NOT_PROJECT_MEMBER
+                - NO_ACCESS
+                - PROJECT_NOT_FOUND_OR_FORBIDDEN
+                - TASK_NOT_FOUND_OR_FORBIDDEN
+              example: "NOT_PROJECT_MEMBER"
+          required: [code, message]
+      required: [success, message, data, error]
+    examples:
+      notProjectMember:
+        summary: User is not a member of the project
+        value:
+          success: false
+          message: "Access forbidden"
+          data: null
+          error:
+            code: 403
+            message: "NOT_PROJECT_MEMBER"
+      projectNotFoundOrForbidden:
+        summary: Project not found or forbidden
+        value:
+          success: false
+          message: "Project not found or access forbidden"
+          data: null
+          error:
+            code: 403
+            message: "PROJECT_NOT_FOUND_OR_FORBIDDEN"
+      taskNotFoundOrForbidden:
+        summary: Task not found or forbidden
+        value:
+          success: false
+          message: "Task not found or access forbidden"
+          data: null
+          error:
+            code: 403
+            message: "TASK_NOT_FOUND_OR_FORBIDDEN"

@@ -1,0 +1,15 @@
+type: object
+required:
+  - items
+  - total
+properties:
+  items:
+    type: array
+    items:
+      $ref: './task-with-project.yml'
+    description: List of unscheduled tasks with project information
+  total:
+    type: integer
+    minimum: 0
+    example: 5
+    description: Total number of unscheduled tasks

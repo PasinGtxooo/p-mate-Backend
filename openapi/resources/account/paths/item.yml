@@ -1,0 +1,32 @@
+paths:
+  /api/accounts/{accountId}:
+    get:
+      operationId: getAccountById
+      summary: Get account by ID
+      description: Get account by ID
+      tags:
+        - account
+      parameters:
+        - name: accountId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Account retrieved successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "../../../shared/schemas/success.yml"
+                  - type: object
+                    properties:
+                      data:
+                        $ref: "../schemas/account.yml"
+        "400":
+          $ref: "../../../shared/responses/bad-request.yml"
+        "404":
+          $ref: "../../../shared/responses/not-found.yml"
+        "500":
+          $ref: "../../../shared/responses/internal-server-error.yml"

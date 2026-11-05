@@ -1,0 +1,23 @@
+type: object
+properties:
+  members:
+    type: array
+    items:
+      type: object
+      properties:
+        account_id:
+          type: string
+          description: Account ID with prefix
+          example: acc_abc123
+        role:
+          type: string
+          description: Member role in the project
+          enum:
+            - owner
+            - member
+          example: member
+        created_at:
+          type: string
+          format: date-time
+          description: When the member was added to the project
+          example: "2024-01-15T10:30:00Z"

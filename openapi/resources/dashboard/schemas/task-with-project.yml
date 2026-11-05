@@ -1,0 +1,57 @@
+type: object
+properties:
+  id:
+    type: string
+    example: "tsk_QsWNVMPBtXjDLiNfpMaWWw"
+    description: Unique identifier for the task
+  name:
+    type: string
+    example: "Implement user authentication"
+    description: Name of the task
+  description:
+    type: string
+    nullable: true
+    example: "Add JWT-based authentication to the API"
+    description: Detailed description of the task
+  priority:
+    type: string
+    enum: [low, medium, high, urgent]
+    example: "high"
+    description: Priority level of the task
+  status:
+    type: string
+    enum: [todo, in_progress, in_review, done]
+    example: "todo"
+    description: Current status of the task
+  start_datetime:
+    type: string
+    format: date-time
+    nullable: true
+    example: "2024-01-15T09:00:00Z"
+    description: Start date and time of the task
+  end_datetime:
+    type: string
+    format: date-time
+    nullable: true
+    example: "2024-01-20T17:00:00Z"
+    description: End date and time of the task
+  project:
+    type: object
+    required:
+      - id
+      - name
+    properties:
+      id:
+        type: string
+        example: "proj_QsWNVMPBtXjDLiNfpMaWWw"
+        description: Unique identifier for the project
+      name:
+        type: string
+        example: "Smart Task AI Backend"
+        description: Name of the project this task belongs to
+required:
+  - id
+  - name
+  - priority
+  - status
+  - project

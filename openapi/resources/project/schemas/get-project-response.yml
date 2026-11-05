@@ -1,0 +1,27 @@
+type: object
+properties:
+  id:
+    type: string
+    example: "proj_KwSysDpxcBU9FNhGkn2dCf"
+  name:
+    type: string
+    example: "Assistant Project"
+  config:
+    type: object
+    example:
+      nickname: "Jarvis"
+      context: "You are a helpful assistant for software developers."
+      domain_knowledge: "Expert in Golang, Clean Architecture, and PostgreSQL"
+  created_at:
+    type: string
+    format: date-time
+    example: "2023-10-27T10:00:00Z"
+  updated_at:
+    type: string
+    format: date-time
+    example: "2023-10-27T10:00:00Z"
+required:
+  - id
+  - name
+  - created_at
+  - updated_at

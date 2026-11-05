@@ -1,0 +1,17 @@
+type: object
+required:
+  - role
+  - content
+properties:
+  role:
+    type: string
+    enum:
+      - user
+      - assistant
+      - system
+    description: The role of the message sender
+    example: "user"
+  content:
+    type: string
+    description: The message content
+    example: "สวัสดี"

@@ -1,0 +1,81 @@
+paths:
+  /api/projects:
+    post:
+      operationId: CreateProject
+      summary: Create a new project
+      description: Create a new project
+      tags:
+        - project
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "../schemas/create-project-request.yml"
+      responses:
+        "201":
+          description: Project created successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - type: object
+                    properties:
+                      data:
+                        $ref: "../schemas/create-project-response.yml"
+                  - $ref: "../../../shared/schemas/success.yml"
+        "400":
+          $ref: "../../../shared/responses/bad-request.yml"
+        "401":
+          $ref: "../../../shared/responses/unauthorized.yml"
+        "500":
+          $ref: "../../../shared/responses/internal-server-error.yml"
+    get:
+      operationId: ListProject
+      summary: List projects
+      description: List projects for the authenticated account
+      tags:
+        - project
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: limit
+          in: query
+          description: Number of items per page
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 10
+        - name: offset
+          in: query
+          description: Number of items to skip for pagination
+          required: false
+          schema:
+            type: integer
+            minimum: 0
+            default: 0
+      responses:
+        "200":
+          description: List Projects successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "../../../shared/schemas/success.yml"
+                  - type: object
+                    properties:
+                      data:
+                        $ref: "../schemas/list-projects-response.yml"
+        "400":
+          $ref: "../../../shared/responses/bad-request.yml"
+        "401":
+          $ref: "../../../shared/responses/unauthorized.yml"
+        "404":
+          $ref: "../../../shared/responses/not-found.yml"
+        "500":
+          $ref: "../../../shared/responses/internal-server-error.yml"
+

@@ -1,0 +1,13 @@
+type: object
+required:
+  - url
+  - updated_at
+properties:
+  url:
+    type: string
+    format: uri
+    description: Public URL of the uploaded avatar
+  updated_at:
+    type: string
+    format: date-time
+    description: Profile update timestamp

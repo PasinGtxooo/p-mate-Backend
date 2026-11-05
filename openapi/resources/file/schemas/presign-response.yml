@@ -1,0 +1,17 @@
+type: object
+required:
+  - presigned_url
+  - key
+  - expires_datetime
+properties:
+  presigned_url:
+    type: string
+    format: uri
+    description: Presigned URL for direct file upload (use HTTP PUT)
+  key:
+    type: string
+    description: Storage key for the uploaded file
+  expires_datetime:
+    type: string
+    format: date-time
+    description: Presigned URL expiration timestamp

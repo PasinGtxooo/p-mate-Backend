@@ -1,0 +1,166 @@
+openapi: 3.0.3
+info:
+  title: Smart Task AI API
+  version: 1.0.0
+  description: |
+    API for managing services with soft multi-tenant architecture.
+
+    ## Multi-Tenant Architecture
+
+    This API implements a soft multi-tenant architecture where:
+    - Each account has a unique `node_id` (tenant identifier)
+    - Projects are owned by accounts and inherit the owner's `node_id`
+    - Users can be invited to projects across different tenants
+    - Access control is based on project membership, not just `node_id`
+
+    ### Authentication & Authorization
+
+    - All authenticated endpoints require a JWT bearer token in the Authorization header
+    - The JWT token contains `AccountId` and `NodeId` claims
+    - Access to resources is controlled by **project membership**
+    - Users can access projects they are members of, regardless of `node_id`
+
+    ### Project Membership
+
+    - Project owners automatically become members with 'owner' role
+    - Users can be invited to projects with 'member' role
+    - Members use the project's `node_id` (not their own) when accessing project resources
+    - Only 'owner' and 'member' roles have access to project resources
+
+    ### Data Isolation
+
+    The following resources are project-membership isolated:
+    - Projects: Accessible if you are the owner or a member
+    - Tasks: Accessible if you are a member of the task's project
+    - Members: Only project members can view other members
+
+    ### Error Responses
+
+    - **401 Unauthorized**: Missing or invalid JWT token, missing/invalid `account_id` in token
+    - **403 Forbidden**: Not a member of the project (NOT_PROJECT_MEMBER)
+    - **404 Not Found**: Resource not found or you don't have access
+
+servers: []
+
+# Security schemes
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: |
+        JWT token obtained from the login endpoint.
+
+        The token must contain the following claims:
+        - AccountId: User's account identifier (used for authorization)
+        - NodeId: Tenant identifier (inherited from account)
+        - Email: User's email address
+        - Username: User's username
+        - Exp: Token expiration timestamp
+
+        Include the token in the Authorization header as: `Bearer <token>`
+
+        Authorization is based on project membership. Users can access projects
+        they are members of, regardless of their NodeId.
+
+# Tags for logical grouping of operations
+tags:
+  - name: health
+    description: Health check endpoints
+  - name: account
+    description: Operations related to account management
+  - name: profile
+    description: Operations related to profile management
+  - name: project
+    description: Operations related to project management
+  - name: task
+    description: Operations related to task management
+  - name: chat
+    description: Operations related to AI chat assistant for task management
+  - name: dashboard
+    description: Operations related to Dashboard statistics and task lists
+  - name: file
+    description: Operations related to File upload operations
+  - name: invitation
+    description: Operations related to project invitations
+
+# All paths are referenced from external files
+paths:
+  # Health endpoints
+  /health:
+    $ref: "./resources/health/paths/collection.yml#/paths/~1health"
+
+  # Account endpoints
+  /api/signup:
+    $ref: "./resources/account/paths/collection.yml#/paths/~1api~1signup"
+
+  /api/login:
+    $ref: "./resources/account/paths/collection.yml#/paths/~1api~1login"
+
+  /api/accounts:
+    $ref: "./resources/account/paths/collection.yml#/paths/~1api~1accounts"
+
+  /api/accounts/{accountId}:
+    $ref: "./resources/account/paths/item.yml#/paths/~1api~1accounts~1{accountId}"
+
+  # Profile endpoints
+  /api/profiles:
+    $ref: "./resources/profile/paths/collection.yml#/paths/~1api~1profiles"
+
+  # Project endpoints
+  /api/projects:
+    $ref: "./resources/project/paths/collection.yml#/paths/~1api~1projects"
+
+  /api/projects/{projectId}:
+    $ref: "./resources/project/paths/item.yml#/paths/~1api~1projects~1{projectId}"
+
+  /api/projects/{projectId}/members:
+    $ref: "./resources/project/paths/item.yml#/paths/~1api~1projects~1{projectId}~1members"
+
+  /api/projects/{projectId}/members/{accountId}:
+    $ref: "./resources/project/paths/item.yml#/paths/~1api~1projects~1{projectId}~1members~1{accountId}"
+
+  # Task endpoints
+  /api/{projectId}/tasks:
+    $ref: "./resources/task/paths/item.yml#/paths/~1api~1{projectId}~1tasks"
+
+  /api/tasks/{taskId}:
+    $ref: "./resources/task/paths/item.yml#/paths/~1api~1tasks~1{taskId}"
+
+  # Chat endpoints
+  /api/{projectId}/chat:
+    $ref: "./resources/chat/paths/item.yml#/paths/~1api~1{projectId}~1chat"
+
+  # Dashboard endpoints
+  /api/dashboard/statistics:
+    $ref: "./resources/dashboard/paths/collection.yml#/paths/~1api~1dashboard~1statistics"
+
+  /api/dashboard/unscheduled-tasks:
+    $ref: "./resources/dashboard/paths/collection.yml#/paths/~1api~1dashboard~1unscheduled-tasks"
+
+  /api/dashboard/today-tasks:
+    $ref: "./resources/dashboard/paths/collection.yml#/paths/~1api~1dashboard~1today-tasks"
+
+  # File upload endpoints
+  /api/files/avatar/presign:
+    $ref: "./resources/file/paths/collection.yml#/paths/~1api~1files~1avatar~1presign"
+
+  /api/files/avatar/upload:
+    $ref: "./resources/file/paths/collection.yml#/paths/~1api~1files~1avatar~1upload"
+
+  # Invitation endpoints
+  /api/projects/{projectId}/invite:
+    $ref: "./resources/invitation/paths/collection.yml#/paths/~1api~1projects~1{projectId}~1invite"
+
+  /api/accounts/me/invite:
+    $ref: "./resources/invitation/paths/collection.yml#/paths/~1api~1accounts~1me~1invite"
+
+  /api/projects/{projectId}/invite/{inviteeAccountId}/accept:
+    $ref: "./resources/invitation/paths/item.yml#/paths/~1api~1projects~1{projectId}~1invite~1{inviteeAccountId}~1accept"
+
+  /api/projects/{projectId}/invite/{inviteeAccountId}/reject:
+    $ref: "./resources/invitation/paths/item.yml#/paths/~1api~1projects~1{projectId}~1invite~1{inviteeAccountId}~1reject"
+
+  /api/projects/{projectId}/invite/{inviteeAccountId}:
+    $ref: "./resources/invitation/paths/item.yml#/paths/~1api~1projects~1{projectId}~1invite~1{inviteeAccountId}"

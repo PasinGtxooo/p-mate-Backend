@@ -1,0 +1,8 @@
+type: object
+properties:
+  project_id:
+    type: string
+    description: The ID of the created project
+    example: "proj_KwSysDpxcBU9FNhGkn2dCf"
+required:
+  - project_id

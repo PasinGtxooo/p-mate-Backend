@@ -1,0 +1,25 @@
+description: Conflict
+content:
+  application/json:
+    schema:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: false
+        message:
+          type: string
+          example: "Operation failed"
+        data:
+          type: object
+          example: null
+        error:
+          type: object
+          example:
+            code: 409
+            message: "CONFLICT"
+      required:
+        - success
+        - message
+        - data
+        - error

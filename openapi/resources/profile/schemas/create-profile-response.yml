@@ -1,0 +1,13 @@
+type: object
+properties:
+  account_id:
+    type: string
+    description: The ID of the created account
+    example: "acc_KwSysDpxcBU9FNhGkn2dCf"
+  profile_id:
+    type: string
+    description: The ID of the created profile
+    example: "prof_KwSysDpxcBU9FNhGkn2dCf"
+required:
+  - account_id
+  - profile_id

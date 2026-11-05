@@ -1,0 +1,7 @@
+type: object
+properties:
+  task_id:
+    type: string
+    example: "tsk_QsWNVMPBtXjDLiNfpMaWWw"
+required:
+  - task_id

@@ -1,0 +1,71 @@
+paths:
+  /api/files/avatar/presign:
+    post:
+      operationId: GeneratePresignedURL
+      summary: Generate presigned URL for avatar upload
+      description: Generate a presigned URL for direct file upload to storage
+      tags:
+        - file
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "../schemas/presign-request.yml"
+      responses:
+        "200":
+          description: Presigned URL generated successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - type: object
+                    properties:
+                      data:
+                        $ref: "../schemas/presign-response.yml"
+                  - $ref: "../../../shared/schemas/success.yml"
+        "400":
+          $ref: "../../../shared/responses/bad-request.yml"
+        "401":
+          $ref: "../../../shared/responses/unauthorized.yml"
+        "500":
+          $ref: "../../../shared/responses/internal-server-error.yml"
+
+  /api/files/avatar/upload:
+    post:
+      operationId: UploadFileS3
+      summary: Complete file upload
+      description: Complete the file upload process and update the profile
+
+      tags:
+        - file
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "../schemas/upload-request.yml"
+      responses:
+        "200":
+          description: Upload successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - type: object
+                    properties:
+                      data:
+                        $ref: "../schemas/upload-response.yml"
+                  - $ref: "../../../shared/schemas/success.yml"
+        "400":
+          $ref: "../../../shared/responses/bad-request.yml"
+        "401":
+          $ref: "../../../shared/responses/unauthorized.yml"
+        "404":
+          $ref: "../../../shared/responses/not-found.yml"
+        "500":
+          $ref: "../../../shared/responses/internal-server-error.yml"

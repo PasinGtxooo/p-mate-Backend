@@ -1,0 +1,43 @@
+type: object
+properties:
+  account_id:
+    type: string
+    description: The ID of the created account
+    example: "acc_KwSysDpxcBU9FNhGkn2dCf"
+  first_name:
+    type: string
+    description: The first name of the profile
+    example: "Johnathan"
+  last_name:
+    type: string
+    description: The last name of the profile
+    example: "Doe"
+  nickname:
+    type: string
+    description: The nickname of the profile
+    example: "John"
+  avatar_path:
+    type: string
+    description: The avatar path of the profile
+    example: "https://example.com/avatar.jpg"
+  state:
+    type: string
+    description: The state of the profile
+    example: "active"
+  created_at:
+    type: string
+    format: date-time
+    description: The timestamp when the account was created
+  updated_at:
+    type: string
+    format: date-time
+    description: The timestamp when the account was created
+required:
+  - account_id
+  - first_name
+  - last_name
+  - nickname
+  - avatar_path
+  - state
+  - created_at
+  - updated_at

@@ -1,0 +1,12 @@
+type: object
+properties:
+  items:
+    type: array
+    description: List of accounts
+    items:
+      $ref: "./account.yml"
+  pagination:
+    $ref: "../../../shared/schemas/pagination.yml"
+required:
+  - items
+  - pagination

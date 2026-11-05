@@ -1,0 +1,153 @@
+paths:
+  /api/projects/{projectId}/invite/{inviteeAccountId}/accept:
+    post:
+      operationId: AcceptInvitation
+      summary: Accept project invitation
+      description: |
+        Accept a pending invitation to join a project.
+        The invitation must be pending and not expired.
+        
+        **Authorization**: User must be the invitee of the invitation.
+      tags:
+        - invitation
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: projectId
+          in: path
+          required: true
+          description: Project ID with prefix (e.g., proj_xxx)
+          schema:
+            type: string
+            pattern: "^proj_[a-zA-Z0-9]+$"
+        - name: inviteeAccountId
+          in: path
+          required: true
+          description: Account ID of the invitee with prefix (e.g., acc_xxx)
+          schema:
+            type: string
+            pattern: "^acc_[a-zA-Z0-9]+$"
+      responses:
+        "200":
+          description: Invitation accepted successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "../../../shared/schemas/success.yml"
+                  - type: object
+                    properties:
+                      data:
+                        $ref: "../schemas/message-response.yml"
+        "401":
+          $ref: "../../../shared/responses/unauthorized.yml"
+        "403":
+          $ref: "../../../shared/responses/forbidden.yml"
+        "404":
+          $ref: "../../../shared/responses/not-found.yml"
+        "409":
+          $ref: "../../../shared/responses/conflict.yml"
+        "500":
+          $ref: "../../../shared/responses/internal-server-error.yml"
+
+  /api/projects/{projectId}/invite/{inviteeAccountId}/reject:
+    post:
+      operationId: RejectInvitation
+      summary: Reject project invitation
+      description: |
+        Reject a pending invitation to join a project.
+        The invitation must be pending and not expired.
+        
+        **Authorization**: User must be the invitee of the invitation.
+      tags:
+        - invitation
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: projectId
+          in: path
+          required: true
+          description: Project ID with prefix (e.g., proj_xxx)
+          schema:
+            type: string
+            pattern: "^proj_[a-zA-Z0-9]+$"
+        - name: inviteeAccountId
+          in: path
+          required: true
+          description: Account ID of the invitee with prefix (e.g., acc_xxx)
+          schema:
+            type: string
+            pattern: "^acc_[a-zA-Z0-9]+$"
+      responses:
+        "200":
+          description: Invitation rejected successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "../../../shared/schemas/success.yml"
+                  - type: object
+                    properties:
+                      data:
+                        $ref: "../schemas/message-response.yml"
+        "401":
+          $ref: "../../../shared/responses/unauthorized.yml"
+        "403":
+          $ref: "../../../shared/responses/forbidden.yml"
+        "404":
+          $ref: "../../../shared/responses/not-found.yml"
+        "409":
+          $ref: "../../../shared/responses/conflict.yml"
+        "500":
+          $ref: "../../../shared/responses/internal-server-error.yml"
+
+  /api/projects/{projectId}/invite/{inviteeAccountId}:
+    delete:
+      operationId: CancelInvitation
+      summary: Cancel project invitation
+      description: |
+        Cancel a pending invitation to join a project.
+        The invitation must be pending (not yet accepted or rejected).
+        
+        **Authorization**: User must be a member of the project.
+      tags:
+        - invitation
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: projectId
+          in: path
+          required: true
+          description: Project ID with prefix (e.g., proj_xxx)
+          schema:
+            type: string
+            pattern: "^proj_[a-zA-Z0-9]+$"
+        - name: inviteeAccountId
+          in: path
+          required: true
+          description: Account ID of the invitee with prefix (e.g., acc_xxx)
+          schema:
+            type: string
+            pattern: "^acc_[a-zA-Z0-9]+$"
+      responses:
+        "200":
+          description: Invitation cancelled successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "../../../shared/schemas/success.yml"
+                  - type: object
+                    properties:
+                      data:
+                        $ref: "../schemas/message-response.yml"
+        "401":
+          $ref: "../../../shared/responses/unauthorized.yml"
+        "403":
+          $ref: "../../../shared/responses/forbidden.yml"
+        "404":
+          $ref: "../../../shared/responses/not-found.yml"
+        "409":
+          $ref: "../../../shared/responses/conflict.yml"
+        "500":
+          $ref: "../../../shared/responses/internal-server-error.yml"

@@ -1,0 +1,144 @@
+paths:
+  /api/{projectId}/chat:
+    post:
+      operationId: sendMessage
+      summary: Send message to AI assistant
+      description: |
+        Send a message to the AI assistant and receive a response. 
+        The AI can help manage tasks including creating, updating, and deleting tasks.
+      tags:
+        - chat
+      parameters:
+        - name: projectId
+          in: path
+          required: true
+          description: The project ID to scope the chat conversation
+          schema:
+            type: string
+            example: "proj_QsWNVMPBtXjDLiNfpMaWWw"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "../schemas/send-message-request.yml"
+      responses:
+        "200":
+          description: Message sent successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "../../../shared/schemas/success.yml"
+                  - type: object
+                    properties:
+                      message:
+                        example: "Message sent successfully"
+                      data:
+                        $ref: "../schemas/send-message-response.yml"
+              examples:
+                text_response:
+                  summary: Simple text response (type = text)
+                  value:
+                    success: true
+                    message: "Message sent successfully"
+                    data:
+                      type: "text"
+                      message: "ผมชื่อ ChatGPT ครับ ยินดีที่ได้รู้จัก! มีอะไรให้ช่วยเหลือบ้างไหม"
+                      tasks: null
+                    error: null
+                task_actions_response:
+                  summary: Response with suggested tasks (type = task_actions)
+                  value:
+                    success: true
+                    message: "Message sent successfully"
+                    data:
+                      type: "task_actions"
+                      message: "นี่คือรายการงานย่อยสำหรับการสร้างแอป To-Do List ภายใน 2 สัปดาห์"
+                      tasks:
+                        - name: "Gather requirements and define features"
+                          description: "รวบรวมความต้องการของผู้ใช้และกำหนดฟีเจอร์หลักของแอป"
+                          priority: "high"
+                          start_datetime: "2026-01-14T09:00:00+07:00"
+                          end_datetime: "2026-01-15T12:00:00+07:00"
+                        - name: "Setup repository and project scaffold"
+                          description: "สร้าง repository บน GitHub, ตั้งค่าโครงสร้างโปรเจคและติดตั้ง dependencies พื้นฐาน"
+                          priority: "high"
+                          start_datetime: "2026-01-15T13:00:00+07:00"
+                          end_datetime: "2026-01-16T12:00:00+07:00"
+                        - name: "Design data model"
+                          description: "กำหนด schema ของ task (title, description, due date, priority, status) ในฐานข้อมูล"
+                          priority: "high"
+                          start_datetime: "2026-01-16T13:00:00+07:00"
+                          end_datetime: "2026-01-17T12:00:00+07:00"
+                    error: null
+        "400":
+          $ref: "../../../shared/responses/bad-request.yml"
+        "401":
+          description: Unauthorized - JWT token is missing or invalid
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: "authentication required"
+                  code:
+                    type: string
+                    example: "UNAUTHORIZED"
+        "404":
+          $ref: "../../../shared/responses/not-found.yml"
+        "429":
+          description: Too many requests - Rate limited by AI service
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: "Too many requests"
+                  code:
+                    type: string
+                    example: "RATE_LIMITED"
+        "503":
+          description: AI service temporarily unavailable
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: "AI service temporarily unavailable"
+                  code:
+                    type: string
+                    example: "GROQ_UNAVAILABLE"
+        "504":
+          description: AI response timeout
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: "AI response timeout"
+                  code:
+                    type: string
+                    example: "GROQ_TIMEOUT"
+        "500":
+          $ref: "../../../shared/responses/internal-server-error.yml"

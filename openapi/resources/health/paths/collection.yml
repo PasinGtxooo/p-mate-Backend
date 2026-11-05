@@ -1,0 +1,26 @@
+paths:
+  /health:
+    get:
+      operationId: GetHealth
+      summary: Health check
+      description: Returns the health status of the API including database connectivity
+      tags:
+        - health
+      responses:
+        "200":
+          description: Service is healthy
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - type: object
+                    properties:
+                      data:
+                        $ref: "../schemas/health-response.yml"
+                  - $ref: "../../../shared/schemas/success.yml"
+        "503":
+          description: Service is unhealthy
+          content:
+            application/json:
+              schema:
+                $ref: "../schemas/health-response.yml"

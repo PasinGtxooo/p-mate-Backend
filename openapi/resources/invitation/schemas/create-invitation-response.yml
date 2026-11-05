@@ -1,0 +1,54 @@
+type: object
+properties:
+  invitation_id:
+    type: string
+    description: Unique identifier for the invitation
+    example: "inv_xyz789"
+  project_id:
+    type: string
+    description: Project ID
+    example: "proj_abc123"
+  project_name:
+    type: string
+    description: Name of the project
+    example: "My Project"
+  inviter_account_id:
+    type: string
+    description: Account ID of the inviter
+    example: "acc_inviter123"
+  inviter_name:
+    type: string
+    description: Name of the inviter
+    example: "John Doe"
+  invitee_account_id:
+    type: string
+    description: Account ID of the invitee
+    example: "acc_abc123"
+  invitee_short_id:
+    type: string
+    description: Short ID of the invitee
+    example: "acc_abc123"
+  invitee_name:
+    type: string
+    description: Name of the invitee
+    example: "Jane Smith"
+  role:
+    type: string
+    enum: [owner, member, viewer]
+    description: Role assigned to the invitee
+    example: "member"
+  status:
+    type: string
+    enum: [pending, accepted, rejected]
+    description: Current status of the invitation
+    example: "pending"
+  created_at:
+    type: string
+    format: date-time
+    description: Timestamp when the invitation was created
+    example: "2024-01-15T10:30:00Z"
+  expires_at:
+    type: string
+    format: date-time
+    description: Timestamp when the invitation expires (30 days from creation)
+    example: "2024-02-14T10:30:00Z"

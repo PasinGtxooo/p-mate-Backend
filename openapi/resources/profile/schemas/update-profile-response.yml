@@ -1,0 +1,32 @@
+type: object
+properties:
+  account_id:
+    type: string
+    description: The ID of the created account
+    example: "acc_KwSysDpxcBU9FNhGkn2dCf"
+  profile_id:
+    type: string
+    description: The ID of the created profile
+    example: "prof_KwSysDpxcBU9FNhGkn2dCf"
+  first_name:
+    type: string
+    description: The first name of the profile
+    example: "John"
+  last_name:
+    type: string
+    description: The last name of the profile
+    example: "Doe"
+  nickname:
+    type: string
+    description: The nickname of the profile
+    example: "Johnny"
+  avatar_path:
+    type: string
+    description: The avatar path of the profile
+    example: "https://example.com/avatar.jpg"
+required:
+  - account_id
+  - profile_id
+  - first_name
+  - last_name
+  - nickname

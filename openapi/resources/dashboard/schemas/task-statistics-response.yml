@@ -1,0 +1,31 @@
+type: object
+properties:
+  todo:
+    type: integer
+    format: int64
+    minimum: 0
+    example: 5
+    description: Number of tasks with status 'todo'
+  in_progress:
+    type: integer
+    format: int64
+    minimum: 0
+    example: 3
+    description: Number of tasks with status 'in_progress'
+  in_review:
+    type: integer
+    format: int64
+    minimum: 0
+    example: 2
+    description: Number of tasks with status 'in_review'
+  done:
+    type: integer
+    format: int64
+    minimum: 0
+    example: 10
+    description: Number of tasks with status 'done'
+required:
+  - todo
+  - in_progress
+  - in_review
+  - done

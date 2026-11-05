@@ -1,0 +1,6 @@
+type: object
+properties:
+  message:
+    type: string
+    description: Success message
+    example: "Invitation accepted successfully"

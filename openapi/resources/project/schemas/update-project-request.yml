@@ -1,0 +1,13 @@
+type: object
+properties:
+  name:
+    type: string
+    example: "Updated Project Name"
+  config:
+    type: object
+    example:
+      nickname: "Jarvis"
+      context: "You are a helpful assistant for software developers."
+      domain_knowledge: "Expert in Golang, Clean Architecture, and PostgreSQL"
+required:
+  - name

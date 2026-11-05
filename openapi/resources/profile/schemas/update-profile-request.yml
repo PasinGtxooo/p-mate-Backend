@@ -1,0 +1,18 @@
+type: object
+properties:
+  first_name:
+    type: string
+    minLength: 4
+    maxLength: 50
+    example: "Johnathan"
+  last_name:
+    type: string
+    minLength: 4
+    maxLength: 50
+    example: "Doe"
+  nickname:
+    type: string
+    maxLength: 20
+    example: "John"
+  avatar_path:
+    type: string

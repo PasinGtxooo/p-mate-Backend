@@ -1,0 +1,206 @@
+paths:
+  /api/tasks/{taskId}:
+    get:
+      operationId: getTaskById
+      summary: Get task by ID
+      description: Get task by ID
+      tags:
+        - task
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: taskId
+          in: path
+          required: true
+          schema:
+            type: string
+            example: "tsk_QsWNVMPBtXjDLiNfpMaWWw"
+      responses:
+        "200":
+          description: Task retrieved successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "../../../shared/schemas/success.yml"
+                  - type: object
+                    properties:
+                      data:
+                        $ref: "../schemas/get-task-response.yml"
+        "400":
+          $ref: "../../../shared/responses/bad-request.yml"
+        "401":
+          $ref: "../../../shared/responses/unauthorized.yml"
+        "403":
+          $ref: "../../../shared/responses/forbidden.yml"
+        "404":
+          $ref: "../../../shared/responses/not-found.yml"
+        "500":
+          $ref: "../../../shared/responses/internal-server-error.yml"
+    patch:
+      operationId: updateTaskById
+      summary: Update task by ID
+      description: Update task by ID
+      tags:
+        - task
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: taskId
+          in: path
+          required: true
+          schema:
+            type: string
+            example: "tsk_QsWNVMPBtXjDLiNfpMaWWw"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "../schemas/update-task-request.yml"
+      responses:
+        "200":
+          description: Task updated successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "../../../shared/schemas/success.yml"
+                  - type: object
+                    properties:
+                      message:
+                        example: "Task updated successfully"
+                      data:
+                        $ref: "../schemas/update-task-response.yml"
+        "400":
+          $ref: "../../../shared/responses/bad-request.yml"
+        "401":
+          $ref: "../../../shared/responses/unauthorized.yml"
+        "403":
+          $ref: "../../../shared/responses/forbidden.yml"
+        "404":
+          $ref: "../../../shared/responses/not-found.yml"
+        "500":
+          $ref: "../../../shared/responses/internal-server-error.yml"
+    delete:
+      operationId: deleteTask
+      summary: Delete task
+      description: Delete task by ID
+      tags:
+        - task
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: taskId
+          in: path
+          required: true
+          schema:
+            type: string
+            example: "tsk_QsWNVMPBtXjDLiNfpMaWWw"
+      responses:
+        "200":
+          description: Task deleted successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "../../../shared/schemas/success.yml"
+                  - type: object
+                    properties:
+                      message:
+                        example: "Task deleted successfully"
+                      data:
+                        $ref: "../schemas/delete-task-response.yml"
+        "400":
+          $ref: "../../../shared/responses/bad-request.yml"
+        "401":
+          $ref: "../../../shared/responses/unauthorized.yml"
+        "403":
+          $ref: "../../../shared/responses/forbidden.yml"
+        "404":
+          $ref: "../../../shared/responses/not-found.yml"
+        "500":
+          $ref: "../../../shared/responses/internal-server-error.yml"
+
+  /api/{projectId}/tasks:
+    post:
+      operationId: createTask
+      summary: Create task
+      description: Create task
+      tags:
+        - task
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "../schemas/create-task-request.yml"
+      parameters:
+        - name: projectId
+          in: path
+          required: true
+          schema:
+            type: string
+            example: "proj_QsWNVMPBtXjDLiNfpMaWWw"
+      responses:
+        "200":
+          description: Task created successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "../../../shared/schemas/success.yml"
+                  - type: object
+                    properties:
+                      data:
+                        $ref: "../schemas/create-task-response.yml"
+        "400":
+          $ref: "../../../shared/responses/bad-request.yml"
+        "401":
+          $ref: "../../../shared/responses/unauthorized.yml"
+        "403":
+          $ref: "../../../shared/responses/forbidden.yml"
+        "404":
+          $ref: "../../../shared/responses/not-found.yml"
+        "500":
+          $ref: "../../../shared/responses/internal-server-error.yml"
+    get:
+      summary: List tasks by project
+      description: List tasks by project
+      operationId: listTaskByProject
+      tags:
+        - task
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: projectId
+          in: path
+          required: true
+          schema:
+            type: string
+            example: "proj_QsWNVMPBtXjDLiNfpMaWWw"
+      responses:
+        "200":
+          description: List Tasks successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "../../../shared/schemas/success.yml"
+                  - type: object
+                    properties:
+                      data:
+                        $ref: "../schemas/list-tasks-by-project-response.yml"
+        "400":
+          $ref: "../../../shared/responses/bad-request.yml"
+        "401":
+          $ref: "../../../shared/responses/unauthorized.yml"
+        "403":
+          $ref: "../../../shared/responses/forbidden.yml"
+        "404":
+          $ref: "../../../shared/responses/not-found.yml"
+        "500":
+          $ref: "../../../shared/responses/internal-server-error.yml"
+

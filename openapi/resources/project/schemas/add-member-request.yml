@@ -1,0 +1,17 @@
+type: object
+required:
+  - account_id
+properties:
+  account_id:
+    type: string
+    description: Account ID with prefix (e.g., acc_xxx)
+    pattern: "^acc_[a-zA-Z0-9]+$"
+    example: acc_abc123
+  role:
+    type: string
+    description: Member role in the project
+    enum:
+      - owner
+      - member
+    default: member
+    example: member

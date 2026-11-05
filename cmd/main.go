@@ -4,6 +4,7 @@ import (
 	"log"
 	"os"
 	"os/signal"
+	"strings"
 	"syscall"
 	"time"
 
@@ -20,6 +21,20 @@ import (
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/joho/godotenv"
 )
+
+// matchOriginPattern returns true if origin matches pattern. Pattern may
+// contain a single '*' wildcard anywhere, so Vercel preview URLs like
+// "https://p-mate-fontend-abc123.vercel.app" can match "https://p-mate-fontend-*.vercel.app".
+func matchOriginPattern(pattern, origin string) bool {
+	if !strings.Contains(pattern, "*") {
+		return pattern == origin
+	}
+	parts := strings.SplitN(pattern, "*", 2)
+	prefix, suffix := parts[0], parts[1]
+	return len(origin) >= len(prefix)+len(suffix) &&
+		strings.HasPrefix(origin, prefix) &&
+		strings.HasSuffix(origin, suffix)
+}
 
 type Application struct {
 	Server *fiber.App
@@ -53,18 +68,48 @@ func main() {
 	// Logger middleware
 	app.Use(middlewares.FiberLoggerMiddleware(zapLogger))
 
-	// CORS middleware
+	// CORS middleware. CORS_ALLOW_ORIGINS is a comma-separated list; each entry
+	// may contain a single '*' wildcard so Vercel preview URLs are all accepted
+	// (e.g. "https://p-mate-fontend-*.vercel.app"). AllowCredentials rules out
+	// plain "*", so we use AllowOriginsFunc when any pattern is present.
 	allowOrigins := os.Getenv("CORS_ALLOW_ORIGINS")
 	if allowOrigins == "" {
 		allowOrigins = "http://localhost:3000"
 	}
 
-	app.Use(cors.New(cors.Config{
-		AllowOrigins:     allowOrigins,
+	rawPatterns := strings.Split(allowOrigins, ",")
+	patterns := make([]string, 0, len(rawPatterns))
+	hasWildcard := false
+	for _, p := range rawPatterns {
+		p = strings.TrimSpace(p)
+		if p == "" {
+			continue
+		}
+		patterns = append(patterns, p)
+		if strings.Contains(p, "*") {
+			hasWildcard = true
+		}
+	}
+
+	corsCfg := cors.Config{
 		AllowMethods:     "GET,POST,PUT,PATCH,DELETE,OPTIONS",
 		AllowHeaders:     "Origin, Content-Type, Accept, Authorization",
 		AllowCredentials: true,
-	}))
+	}
+	if hasWildcard {
+		corsCfg.AllowOriginsFunc = func(origin string) bool {
+			for _, p := range patterns {
+				if matchOriginPattern(p, origin) {
+					return true
+				}
+			}
+			return false
+		}
+	} else {
+		corsCfg.AllowOrigins = strings.Join(patterns, ",")
+	}
+
+	app.Use(cors.New(corsCfg))
 
 	// Health check route (public, no auth required)
 	healthHandler := handlers.NewHealthHandler(dbConnector)

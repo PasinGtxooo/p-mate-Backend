@@ -196,14 +196,11 @@ func (s *TaskService) UpdateTask(ctx context.Context, taskID uuid.UUID, req *tas
 		return nil, apperror.NewForbiddenError("you are not a member of this project", "NOT_PROJECT_MEMBER", nil)
 	}
 
-	newStatus := tsk.Status
-	if req.Status != nil {
-		newStatus = *req.Status
-	}
-
-	if newStatus != "todo" && req.StartDateTime != nil {
-		return nil, apperror.NewBadRequestError("cannot update start date/time when status is not todo", "INVALID_REQUEST", nil)
-	}
+	// Note: previously we blocked editing start_datetime when the task was
+	// no longer "todo". That rule tripped the common flow "mark as done" —
+	// the client re-sends the whole form including the unchanged start date,
+	// which was rejected as an illegal reschedule. Removed for the hackathon;
+	// PMs own their calendar.
 
 	// Additional validation same as CreateTask
 	if err := s.validateTimeRange(req.StartDateTime, req.EndDateTime); err != nil {

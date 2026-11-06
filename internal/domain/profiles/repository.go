@@ -13,4 +13,5 @@ type ProfileRepository interface {
 	UpdateProfile(ctx context.Context, prof *entity.Profile, nodeID string) error
 	ListProfilesByAccountIDs(ctx context.Context, accountIDs []string, nodeID string) ([]*entity.Profile, error)
 	UpdateProfileSkills(ctx context.Context, accountID string, nodeID string, skills []entity.ProfileSkill) error
+	UpdateCapacity(ctx context.Context, accountID string, nodeID string, capacityMDPerYear float64) error
 }

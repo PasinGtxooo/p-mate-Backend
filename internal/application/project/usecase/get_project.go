@@ -40,10 +40,11 @@ func (uc *GetProjectByIDUseCase) Execute(ctx context.Context, id string, nodeID 
 	}
 
 	return &project.ProjectResponse{
-		ID:        utils.ShortUUIDWithPrefix(proj.ID, entity.ProjectIDPrefix),
-		Name:      proj.Name,
-		Config:    proj.Config,
-		CreatedAt: proj.CreatedAt,
-		UpdatedAt: proj.UpdatedAt,
+		ID:         utils.ShortUUIDWithPrefix(proj.ID, entity.ProjectIDPrefix),
+		Name:       proj.Name,
+		Config:     proj.Config,
+		GoLiveDate: proj.GoLiveDate,
+		CreatedAt:  proj.CreatedAt,
+		UpdatedAt:  proj.UpdatedAt,
 	}, nil
 }

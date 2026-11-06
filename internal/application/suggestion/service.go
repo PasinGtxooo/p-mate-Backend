@@ -27,6 +27,11 @@ const deadlineWindowMD = 8.0
 // full skill match for a task.
 const requiredSkillLevel = 4
 
+// defaultYearlyCapacityMD is the fallback capacity (in man-days per year) used
+// when a profile hasn't set capacity_md_per_year. 240 ≈ 20 MD/month × 12 months,
+// a typical consultant utilisation target.
+const defaultYearlyCapacityMD = 240.0
+
 // SuggestionService composes task, member and profile data to answer two
 // questions for a PM: who should take a task, and does the team need more people.
 type SuggestionService struct {
@@ -220,6 +225,23 @@ func (s *SuggestionService) GetManpower(ctx context.Context, projectID uuid.UUID
 		headcount = int((gap + deadlineWindowMD - 1) / deadlineWindowMD) // ceil
 	}
 
+	members := make([]MemberLoad, 0, len(profs))
+	for _, p := range profs {
+		md := assigned[p.AccountID]
+		pos := ""
+		if p.Position != nil {
+			pos = *p.Position
+		}
+		members = append(members, MemberLoad{
+			AccountID:  utils.ShortUUIDWithPrefix(p.AccountID, accountEntity.AccountIDPrefix),
+			Name:       strings.TrimSpace(p.FirstName + " " + p.LastName),
+			Position:   pos,
+			AssignedMD: md,
+			FreeMD:     deadlineWindowMD - md,
+			Over:       md > deadlineWindowMD,
+		})
+	}
+
 	return &ManpowerResponse{
 		ProjectID:        utils.ShortUUIDWithPrefix(projectID, "proj"),
 		TotalOpenMD:      totalOpenMD,
@@ -227,6 +249,7 @@ func (s *SuggestionService) GetManpower(ctx context.Context, projectID uuid.UUID
 		GapMD:            maxF(gap, 0),
 		NeedMorePeople:   need,
 		SuggestHeadcount: headcount,
+		Members:          members,
 	}, nil
 }
 
@@ -336,6 +359,11 @@ func (s *SuggestionService) ListMemberSkills(ctx context.Context, projectID uuid
 			if p.Position != nil {
 				info.Position = *p.Position
 			}
+			if p.CapacityMDPerYear != nil {
+				info.CapacityMDPerYear = *p.CapacityMDPerYear
+			} else {
+				info.CapacityMDPerYear = defaultYearlyCapacityMD
+			}
 			if p.Skills != nil {
 				info.Skills = p.Skills
 			}
@@ -344,6 +372,31 @@ func (s *SuggestionService) ListMemberSkills(ctx context.Context, projectID uuid
 	}
 
 	return &MemberSkillsResponse{Members: items}, nil
+}
+
+// SetMemberCapacity lets the owner or a PM set a member's yearly capacity
+// (in man-days). Used by the ranker to decide who is free in the task's window.
+func (s *SuggestionService) SetMemberCapacity(ctx context.Context, projectID uuid.UUID, targetAccountID uuid.UUID, nodeID string, callerAccountID uuid.UUID, capacityMDPerYear float64) error {
+	nodeUUID, err := uuid.Parse(nodeID)
+	if err != nil {
+		return apperror.NewBadRequestError("invalid node ID format", "INVALID_NODE_ID", err)
+	}
+	if capacityMDPerYear < 0 || capacityMDPerYear > 10000 {
+		return apperror.NewBadRequestError("capacity must be between 0 and 10000 MD/year", "INVALID_CAPACITY", nil)
+	}
+
+	caller, err := s.projectRepo.GetProjectMember(ctx, projectID, callerAccountID, nodeUUID)
+	if err != nil {
+		return apperror.NewForbiddenError("you don't have access to this project", "NO_ACCESS", err)
+	}
+	if caller.Role != projectEntity.RoleOwner && caller.Role != projectEntity.RolePM {
+		return apperror.NewForbiddenError("only owner or PM can set capacity", "NOT_MANAGER", nil)
+	}
+
+	if err := s.profileRepo.UpdateCapacity(ctx, targetAccountID.String(), nodeID, capacityMDPerYear); err != nil {
+		return apperror.NewInternalServerError("failed to update capacity", "UPDATE_CAPACITY_ERROR", err)
+	}
+	return nil
 }
 
 // SetMemberRole lets the project owner promote a member to PM or demote back to

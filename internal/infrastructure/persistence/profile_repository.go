@@ -72,3 +72,10 @@ func (r *profileRepository) UpdateProfileSkills(ctx context.Context, accountID s
 		Where("account_id = ? AND node_id = ?", accountID, nodeID).
 		Update("skills", skills).Error
 }
+
+func (r *profileRepository) UpdateCapacity(ctx context.Context, accountID string, nodeID string, capacityMDPerYear float64) error {
+	return r.db.WithContext(ctx).
+		Model(&entity.Profile{}).
+		Where("account_id = ? AND node_id = ?", accountID, nodeID).
+		Update("capacity_md_per_year", capacityMDPerYear).Error
+}

@@ -161,7 +161,8 @@ func RegisterPrivateRoutes(app fiber.Router, db *gorm.DB, log logger.Logger) {
 	setMemberSkillsUC := suggestionUC.NewSetMemberSkillsUseCase(suggestionService, log)
 	listMemberSkillsUC := suggestionUC.NewListMemberSkillsUseCase(suggestionService, log)
 	setMemberRoleUC := suggestionUC.NewSetMemberRoleUseCase(suggestionService, log)
-	suggestionHandlerInstance := handler.NewSuggestionHandler(suggestTeammatesUC, getManpowerUC, setMemberSkillsUC, listMemberSkillsUC, setMemberRoleUC, log)
+	setMemberCapacityUC := suggestionUC.NewSetMemberCapacityUseCase(suggestionService, log)
+	suggestionHandlerInstance := handler.NewSuggestionHandler(suggestTeammatesUC, getManpowerUC, setMemberSkillsUC, listMemberSkillsUC, setMemberRoleUC, setMemberCapacityUC, log)
 
 	// Suggestion routes
 	api.Get("/tasks/:taskId/suggest-teammates", suggestionHandlerInstance.SuggestTeammates)
@@ -169,6 +170,7 @@ func RegisterPrivateRoutes(app fiber.Router, db *gorm.DB, log logger.Logger) {
 	api.Get("/projects/:projectId/member-skills", suggestionHandlerInstance.ListMemberSkills)
 	api.Put("/projects/:projectId/members/:accountId/skills", suggestionHandlerInstance.SetMemberSkills)
 	api.Put("/projects/:projectId/members/:accountId/role", suggestionHandlerInstance.SetMemberRole)
+	api.Put("/projects/:projectId/members/:accountId/capacity", suggestionHandlerInstance.SetMemberCapacity)
 
 	// Upload setup
 	SetupUploadHandlers(api, db, profileRepository, log)

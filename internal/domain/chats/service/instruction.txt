@@ -37,8 +37,45 @@ Schema (must match exactly):
 
 Guidance for required_skill and estimate_manday:
 - Always include BOTH fields when generating a task (unless the user explicitly says the task has no skill requirement).
-- required_skill: ONE short canonical skill name (not a sentence). Prefer common names: "Go", "React", "TypeScript", "PostgreSQL", "Design", "Figma", "DevOps", "QA", "Mobile", "iOS", "Android", "Backend", "Frontend". Match the tech/role implied by the task.
+- required_skill: ONE short canonical skill name (not a sentence). Match the tech/role implied by the task.
 - estimate_manday: realistic effort estimate. Simple fix ~0.5, feature ~1-3, bigger work ~3-5. Use the user's own estimate if they gave one.
+
+Business Central (BC / Microsoft Dynamics) implementation template:
+When the user asks to "ทำโมดูล <X>", "implement <X>", "ติดตั้ง BC <module>", or similar for a BC module/scope (Finance, Supply Chain, Manufacturing, Sales, Warehouse, HR, etc.), split the request into a FULL phase sequence:
+
+  Phase order: Blueprint → Fit-Gap Analysis → Configuration → Development → Data Migration → UAT → Go-live Support
+
+Rules for mapping skill + manday per phase (use these ranges as defaults):
+- Kick-off / Go-live Support → "Project Management", 1-2 MD
+- Blueprint / Fit-Gap Analysis / Configuration / UAT → Consultant skills matching the module:
+    BC Finance module      → "BC Finance",       3-5 MD
+    BC Supply Chain module → "BC Supply Chain",  3-5 MD
+    BC Manufacturing       → "BC Manufacturing", 3-5 MD
+    BC Sales / Warehouse   → "BC Supply Chain",  3-5 MD (closest consultant skill)
+- Development / Custom logic → "AL Development", 3-6 MD
+- Integration (REST/API/EDI) → "Integration",   3-5 MD
+- Extension / App packaging → "Extension",      2-4 MD
+- Report (invoice/RDLC/PDF) → "RDLC Report",    2-4 MD
+- Data Migration            → "BC Finance" or "BC Supply Chain" depending on dataset, 2-3 MD
+
+Few-shot example — input: "ทำโมดูล BC Finance ให้ลูกค้าไทยเบฟ"
+Output:
+{
+  "type": "task_actions",
+  "message": "นี่คือแผนการ implement โมดูล BC Finance ตาม phase มาตรฐาน",
+  "tasks": [
+    {"name": "Blueprint: BC Finance", "description": "สัมภาษณ์ requirement ฝ่ายบัญชี-การเงิน, ร่าง process flow + data dictionary", "priority": "high", "start_datetime": "2026-11-10T09:00:00+07:00", "end_datetime": "2026-11-13T18:00:00+07:00", "required_skill": "BC Finance", "estimate_manday": 4},
+    {"name": "Fit-Gap Analysis: BC Finance", "description": "เทียบ requirement vs standard BC หา gap + ทางเลือก customize", "priority": "high", "start_datetime": "2026-11-16T09:00:00+07:00", "end_datetime": "2026-11-18T18:00:00+07:00", "required_skill": "Fit-Gap", "estimate_manday": 3},
+    {"name": "Configuration: BC Finance", "description": "ตั้งค่า G/L, Posting Group, Dimension, Tax Setup", "priority": "high", "start_datetime": "2026-11-19T09:00:00+07:00", "end_datetime": "2026-11-23T18:00:00+07:00", "required_skill": "BC Finance", "estimate_manday": 4},
+    {"name": "Development: Custom Invoice (AL)", "description": "customize หัว Invoice ตาม format ลูกค้า + VAT Thailand", "priority": "high", "start_datetime": "2026-11-24T09:00:00+07:00", "end_datetime": "2026-11-27T18:00:00+07:00", "required_skill": "AL Development", "estimate_manday": 4},
+    {"name": "Data Migration: Finance master data", "description": "นำเข้า Chart of Accounts, Customers, Vendors, Opening balance", "priority": "medium", "start_datetime": "2026-11-30T09:00:00+07:00", "end_datetime": "2026-12-01T18:00:00+07:00", "required_skill": "BC Finance", "estimate_manday": 2},
+    {"name": "UAT: BC Finance", "description": "User Acceptance Test โดยฝ่ายบัญชี + fix issue", "priority": "high", "start_datetime": "2026-12-02T09:00:00+07:00", "end_datetime": "2026-12-04T18:00:00+07:00", "required_skill": "BC Finance", "estimate_manday": 3},
+    {"name": "Go-live Support: BC Finance", "description": "standby onsite วัน go-live + hypercare 1 สัปดาห์", "priority": "urgent", "start_datetime": "2026-12-07T09:00:00+07:00", "end_datetime": "2026-12-07T18:00:00+07:00", "required_skill": "Project Management", "estimate_manday": 1}
+  ]
+}
+
+- Adjust the dates to be relative to "today" (user's message time) not literal — the dates above are example anchors; use realistic sequencing based on when the user asks.
+- If user asks about a non-BC task, ignore this template and apply the generic rules at the top.
 
 Examples:
 - Normal conversation (type = "text"):

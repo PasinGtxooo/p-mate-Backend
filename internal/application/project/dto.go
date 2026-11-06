@@ -24,12 +24,13 @@ type CreateProjectResponse struct {
 }
 
 type ProjectResponse struct {
-	ID        string          `json:"id"`
-	Name      string          `json:"name"`
-	Role      string          `json:"role"`
-	Config    json.RawMessage `json:"config"`
-	CreatedAt time.Time       `json:"created_at"`
-	UpdatedAt time.Time       `json:"updated_at"`
+	ID         string          `json:"id"`
+	Name       string          `json:"name"`
+	Role       string          `json:"role"`
+	Config     json.RawMessage `json:"config"`
+	GoLiveDate *time.Time      `json:"go_live_date,omitempty"`
+	CreatedAt  time.Time       `json:"created_at"`
+	UpdatedAt  time.Time       `json:"updated_at"`
 }
 
 type ListProjectResponse struct {

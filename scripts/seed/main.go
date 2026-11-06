@@ -37,33 +37,37 @@ CREATE INDEX IF NOT EXISTS idx_accounts_node_id ON accounts(node_id);
 
 -- Profiles
 CREATE TABLE IF NOT EXISTS profiles (
-	id          CHAR(36) PRIMARY KEY,
-	node_id     CHAR(36) NOT NULL,
-	account_id  CHAR(36) UNIQUE NOT NULL,
-	first_name  VARCHAR(100) NOT NULL,
-	last_name   VARCHAR(100) NOT NULL,
-	nickname    VARCHAR(50),
-	avatar_path VARCHAR(500),
-	position    VARCHAR(50),
-	skills      JSONB,
-	state       VARCHAR(20) NOT NULL DEFAULT 'active' CHECK (state IN ('active','inactive')),
-	created_at  TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
-	updated_at  TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
+	id                     CHAR(36) PRIMARY KEY,
+	node_id                CHAR(36) NOT NULL,
+	account_id             CHAR(36) UNIQUE NOT NULL,
+	first_name             VARCHAR(100) NOT NULL,
+	last_name              VARCHAR(100) NOT NULL,
+	nickname               VARCHAR(50),
+	avatar_path            VARCHAR(500),
+	position               VARCHAR(50),
+	capacity_md_per_year   DOUBLE PRECISION,
+	skills                 JSONB,
+	state                  VARCHAR(20) NOT NULL DEFAULT 'active' CHECK (state IN ('active','inactive')),
+	created_at             TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+	updated_at             TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
-ALTER TABLE profiles ADD COLUMN IF NOT EXISTS position VARCHAR(50);
+ALTER TABLE profiles ADD COLUMN IF NOT EXISTS position             VARCHAR(50);
+ALTER TABLE profiles ADD COLUMN IF NOT EXISTS capacity_md_per_year DOUBLE PRECISION;
 CREATE INDEX IF NOT EXISTS idx_profiles_node_id ON profiles(node_id);
 
 -- Projects
 CREATE TABLE IF NOT EXISTS projects (
-	id         CHAR(36) PRIMARY KEY,
-	node_id    CHAR(36) NOT NULL,
-	owner_id   CHAR(36) NOT NULL,
-	name       VARCHAR(255) NOT NULL,
-	config     JSONB,
-	created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
-	updated_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
-	deleted_at TIMESTAMPTZ
+	id           CHAR(36) PRIMARY KEY,
+	node_id      CHAR(36) NOT NULL,
+	owner_id     CHAR(36) NOT NULL,
+	name         VARCHAR(255) NOT NULL,
+	config       JSONB,
+	go_live_date TIMESTAMPTZ,
+	created_at   TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+	updated_at   TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+	deleted_at   TIMESTAMPTZ
 );
+ALTER TABLE projects ADD COLUMN IF NOT EXISTS go_live_date TIMESTAMPTZ;
 CREATE INDEX IF NOT EXISTS idx_projects_node_id  ON projects(node_id);
 CREATE INDEX IF NOT EXISTS idx_projects_owner_id ON projects(owner_id);
 CREATE INDEX IF NOT EXISTS idx_projects_deleted_at ON projects(deleted_at);
@@ -126,15 +130,16 @@ CREATE INDEX IF NOT EXISTS idx_tasks_deleted_at  ON tasks(deleted_at);
 `
 
 type seedUser struct {
-	username  string
-	email     string
-	firstName string
-	lastName  string
-	nickname  string
-	position  string // PM / Consultant / Developer
-	skills    []map[string]any
-	accountID uuid.UUID
-	profileID uuid.UUID
+	username   string
+	email      string
+	firstName  string
+	lastName   string
+	nickname   string
+	position   string  // PM / Consultant / Developer
+	capacityMD float64 // yearly man-day capacity (240 ≈ 20 MD/month)
+	skills     []map[string]any
+	accountID  uuid.UUID
+	profileID  uuid.UUID
 }
 
 type seedTask struct {
@@ -169,11 +174,13 @@ func main() {
 	nodeID := uuid.New()
 
 	// --- Team: Thai BC (Business Central) consultants/developers ---
+	// capacity_md_per_year defaults: PM ~120 (half-time implementation),
+	// Consultant/Dev ~240 (20 MD/month × 12 months).
 	users := []*seedUser{
 		{
 			username: "pakorn", email: "pakorn@thaibev.co.th",
 			firstName: "ปกรณ์", lastName: "ธนากุล", nickname: "โอ",
-			position: "PM",
+			position: "PM", capacityMD: 120,
 			skills: []map[string]any{
 				{"name": "Project Management", "level": 5},
 				{"name": "BC Project", "level": 4},
@@ -182,7 +189,7 @@ func main() {
 		{
 			username: "manee", email: "manee@thaibev.co.th",
 			firstName: "มานี", lastName: "ศรีสุข", nickname: "นี",
-			position: "Consultant",
+			position: "Consultant", capacityMD: 240,
 			skills: []map[string]any{
 				{"name": "BC Finance", "level": 5},
 				{"name": "Blueprint", "level": 5},
@@ -192,7 +199,7 @@ func main() {
 		{
 			username: "somchai", email: "somchai@thaibev.co.th",
 			firstName: "สมชาย", lastName: "พานิช", nickname: "ชาย",
-			position: "Consultant",
+			position: "Consultant", capacityMD: 240,
 			skills: []map[string]any{
 				{"name": "BC Supply Chain", "level": 5},
 				{"name": "BC Manufacturing", "level": 4},
@@ -201,7 +208,7 @@ func main() {
 		{
 			username: "wichai", email: "wichai@thaibev.co.th",
 			firstName: "วิชัย", lastName: "ชัยวงศ์", nickname: "ชัย",
-			position: "Developer",
+			position: "Developer", capacityMD: 240,
 			skills: []map[string]any{
 				{"name": "AL Development", "level": 5},
 				{"name": "Integration", "level": 4},
@@ -211,7 +218,7 @@ func main() {
 		{
 			username: "napha", email: "napha@thaibev.co.th",
 			firstName: "นภา", lastName: "วงศ์วาน", nickname: "ภา",
-			position: "Developer",
+			position: "Developer", capacityMD: 240,
 			skills: []map[string]any{
 				{"name": "RDLC Report", "level": 5},
 				{"name": "Power Platform", "level": 4},
@@ -231,18 +238,19 @@ func main() {
 		}
 		skillsJSON, _ := json.Marshal(u.skills)
 		if err := db.Exec(`
-			INSERT INTO profiles (id, node_id, account_id, first_name, last_name, nickname, position, skills, state, created_at, updated_at)
-			VALUES (?, ?, ?, ?, ?, ?, ?, ?::jsonb, 'active', ?, ?)
+			INSERT INTO profiles (id, node_id, account_id, first_name, last_name, nickname, position, capacity_md_per_year, skills, state, created_at, updated_at)
+			VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?::jsonb, 'active', ?, ?)
 			ON CONFLICT (account_id) DO UPDATE SET
-				position = EXCLUDED.position,
-				skills   = EXCLUDED.skills,
-				first_name = EXCLUDED.first_name,
-				last_name  = EXCLUDED.last_name`,
+				position             = EXCLUDED.position,
+				capacity_md_per_year = EXCLUDED.capacity_md_per_year,
+				skills               = EXCLUDED.skills,
+				first_name           = EXCLUDED.first_name,
+				last_name            = EXCLUDED.last_name`,
 			u.profileID.String(), nodeID.String(), u.accountID.String(),
-			u.firstName, u.lastName, u.nickname, u.position, string(skillsJSON), now, now).Error; err != nil {
+			u.firstName, u.lastName, u.nickname, u.position, u.capacityMD, string(skillsJSON), now, now).Error; err != nil {
 			log.Fatalf("insert profile %s: %v", u.username, err)
 		}
-		log.Printf("  👤 %s %s — %s", u.firstName, u.lastName, u.position)
+		log.Printf("  👤 %s %s — %s · %.0f MD/ปี", u.firstName, u.lastName, u.position, u.capacityMD)
 	}
 
 	// lookup by position/username for readability
@@ -257,30 +265,32 @@ func main() {
 	napha := byName["napha"]
 
 	// --- Project 1: BC Implementation – ไทยเบฟ โลจิสติกส์ (go-live ~3 weeks) ---
+	goLive1 := now.AddDate(0, 0, 21)
 	project1ID := uuid.New()
-	project1Cfg := `{"color":"#2563eb","go_live":"` + now.AddDate(0, 0, 21).Format("2006-01-02") + `"}`
+	project1Cfg := `{"color":"#2563eb","go_live":"` + goLive1.Format("2006-01-02") + `"}`
 	if err := db.Exec(`
-		INSERT INTO projects (id, node_id, owner_id, name, config, created_at, updated_at)
-		VALUES (?, ?, ?, ?, ?::jsonb, ?, ?)
+		INSERT INTO projects (id, node_id, owner_id, name, config, go_live_date, created_at, updated_at)
+		VALUES (?, ?, ?, ?, ?::jsonb, ?, ?, ?)
 		ON CONFLICT (id) DO NOTHING`,
 		project1ID.String(), nodeID.String(), pakorn.accountID.String(),
-		"BC Implementation – ไทยเบฟ โลจิสติกส์", project1Cfg, now, now).Error; err != nil {
+		"BC Implementation – ไทยเบฟ โลจิสติกส์", project1Cfg, goLive1, now, now).Error; err != nil {
 		log.Fatalf("insert project1: %v", err)
 	}
 	log.Printf("  📁 โปรเจกต์: BC Implementation – ไทยเบฟ โลจิสติกส์ (go-live ~3 สัปดาห์)")
 
-	// --- Project 2: BC Phase 2 – ไทยเบฟ (same go-live, go-live conflict narrative) ---
+	// --- Project 2: BC Phase 2 – ไทยเบฟ (go-live 3 วันหลัง P1 → อยู่ในหน้าต่าง 7 วัน = Conflict) ---
+	goLive2 := now.AddDate(0, 0, 24)
 	project2ID := uuid.New()
-	project2Cfg := `{"color":"#f59e0b","go_live":"` + now.AddDate(0, 0, 21).Format("2006-01-02") + `"}`
+	project2Cfg := `{"color":"#f59e0b","go_live":"` + goLive2.Format("2006-01-02") + `"}`
 	if err := db.Exec(`
-		INSERT INTO projects (id, node_id, owner_id, name, config, created_at, updated_at)
-		VALUES (?, ?, ?, ?, ?::jsonb, ?, ?)
+		INSERT INTO projects (id, node_id, owner_id, name, config, go_live_date, created_at, updated_at)
+		VALUES (?, ?, ?, ?, ?::jsonb, ?, ?, ?)
 		ON CONFLICT (id) DO NOTHING`,
 		project2ID.String(), nodeID.String(), pakorn.accountID.String(),
-		"BC Phase 2 – ไทยเบฟ", project2Cfg, now, now).Error; err != nil {
+		"BC Phase 2 – ไทยเบฟ", project2Cfg, goLive2, now, now).Error; err != nil {
 		log.Fatalf("insert project2: %v", err)
 	}
-	log.Printf("  📁 โปรเจกต์: BC Phase 2 – ไทยเบฟ (go-live วันเดียวกัน → Conflict)")
+	log.Printf("  📁 โปรเจกต์: BC Phase 2 – ไทยเบฟ (go-live ห่าง P1 เพียง 3 วัน → Conflict!)")
 
 	// Members: pakorn owner on both, others member
 	addMember := func(projID uuid.UUID, u *seedUser, role string) {

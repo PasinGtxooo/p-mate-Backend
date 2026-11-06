@@ -10,12 +10,13 @@ import (
 )
 
 type SuggestionHandler struct {
-	SuggestTeammatesUC *usecase.SuggestTeammatesUseCase
-	GetManpowerUC      *usecase.GetManpowerUseCase
-	SetMemberSkillsUC  *usecase.SetMemberSkillsUseCase
-	ListMemberSkillsUC *usecase.ListMemberSkillsUseCase
-	SetMemberRoleUC    *usecase.SetMemberRoleUseCase
-	logger             logger.Logger
+	SuggestTeammatesUC   *usecase.SuggestTeammatesUseCase
+	GetManpowerUC        *usecase.GetManpowerUseCase
+	SetMemberSkillsUC    *usecase.SetMemberSkillsUseCase
+	ListMemberSkillsUC   *usecase.ListMemberSkillsUseCase
+	SetMemberRoleUC      *usecase.SetMemberRoleUseCase
+	SetMemberCapacityUC  *usecase.SetMemberCapacityUseCase
+	logger               logger.Logger
 }
 
 func NewSuggestionHandler(
@@ -24,15 +25,17 @@ func NewSuggestionHandler(
 	setMemberSkills *usecase.SetMemberSkillsUseCase,
 	listMemberSkills *usecase.ListMemberSkillsUseCase,
 	setMemberRole *usecase.SetMemberRoleUseCase,
+	setMemberCapacity *usecase.SetMemberCapacityUseCase,
 	l logger.Logger,
 ) *SuggestionHandler {
 	return &SuggestionHandler{
-		SuggestTeammatesUC: suggestTeammates,
-		GetManpowerUC:      getManpower,
-		SetMemberSkillsUC:  setMemberSkills,
-		ListMemberSkillsUC: listMemberSkills,
-		SetMemberRoleUC:    setMemberRole,
-		logger:             l,
+		SuggestTeammatesUC:  suggestTeammates,
+		GetManpowerUC:       getManpower,
+		SetMemberSkillsUC:   setMemberSkills,
+		ListMemberSkillsUC:  listMemberSkills,
+		SetMemberRoleUC:     setMemberRole,
+		SetMemberCapacityUC: setMemberCapacity,
+		logger:              l,
 	}
 }
 
@@ -147,4 +150,27 @@ func (h *SuggestionHandler) SetMemberRole(c *fiber.Ctx) error {
 		return responses.Error(c, err)
 	}
 	return responses.Success(c, fiber.Map{"account_id": targetAccountID, "role": req.Role}, "Member role updated successfully")
+}
+
+// SetMemberCapacity lets owner/pm set a member's yearly MD capacity.
+func (h *SuggestionHandler) SetMemberCapacity(c *fiber.Ctx) error {
+	projectID := c.Params("projectId")
+	targetAccountID := c.Params("accountId")
+	if projectID == "" || targetAccountID == "" {
+		return responses.Error(c, apperror.NewBadRequestError("project ID and account ID are required", "INVALID_PARAMS", nil))
+	}
+	nodeID, callerAccountID, err := h.claims(c)
+	if err != nil {
+		return responses.Error(c, err)
+	}
+
+	var req suggestion.SetMemberCapacityRequest
+	if err := c.BodyParser(&req); err != nil {
+		return responses.Error(c, apperror.NewBadRequestError("invalid request body", "INVALID_REQUEST", err))
+	}
+
+	if err := h.SetMemberCapacityUC.Execute(c.Context(), projectID, targetAccountID, nodeID, callerAccountID, &req); err != nil {
+		return responses.Error(c, err)
+	}
+	return responses.Success(c, fiber.Map{"account_id": targetAccountID, "capacity_md_per_year": req.CapacityMDPerYear}, "Member capacity updated successfully")
 }

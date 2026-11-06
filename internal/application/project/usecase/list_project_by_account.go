@@ -52,12 +52,13 @@ func (uc *ListProjectByAccountUseCase) Execute(ctx context.Context, req *project
 		}
 
 		items[i] = project.ProjectResponse{
-			ID:        utils.ShortUUIDWithPrefix(p.ID, entity.ProjectIDPrefix),
-			Name:      p.Name,
-			Role:      role,
-			Config:    p.Config,
-			CreatedAt: p.CreatedAt,
-			UpdatedAt: p.UpdatedAt,
+			ID:         utils.ShortUUIDWithPrefix(p.ID, entity.ProjectIDPrefix),
+			Name:       p.Name,
+			Role:       role,
+			Config:     p.Config,
+			GoLiveDate: p.GoLiveDate,
+			CreatedAt:  p.CreatedAt,
+			UpdatedAt:  p.UpdatedAt,
 		}
 	}
 
